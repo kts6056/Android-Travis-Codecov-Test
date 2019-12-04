@@ -13,9 +13,19 @@ android:
 jdk:
   - openjdk8
 
+branches:
+  except:
+    - gh-pages
+
+licenses:
+  - '.+'
+
 cache:
   directories:
     - $HOME/.gradle
 
 script:
   - chmod +x ./gradlew
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
