@@ -1,39 +1,30 @@
 language: android
 
+jdk: openjdk8
+
 env:
   global:
     - ANDROID_TARGET=android-29
-    - ANDROID_ABI=x86
-
+    - ANDROID_ABI=armeabi-v7a
 android:
   components:
     - tools
     - platform-tools
     - build-tools-29.0.0
-    - android-29
-    - extra-android-support
+    - build-tools-23.0.3
+    - android-23
     - extra-android-m2repository
-    - extra-google-m2repository
     - $ANDROID_TARGET
-    - sys-img-${ANDROID_ABI}-${ANDROID_TARGET}
-
-jdk:
-  - openjdk8
+    - android-22
+    - sys-img-armeabi-v7a-android-22
 
 branches:
   except:
     - gh-pages
 
-licenses:
-  - '.+'
-
-cache:
-  directories:
-    - $HOME/.gradle
-
 script:
   - ./gradlew build jacocoTestReport assembleAndroidTest
-  - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
+  - echo no | android create avd --force -n test -t android-22 --abi $ANDROID_ABI
   - emulator -avd test -no-skin -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
@@ -41,3 +32,14 @@ script:
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle
+    - $HOME/.pub-cache
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.android/build-cache
